@@ -2,11 +2,8 @@ import 'dart:async';
 
 import 'package:exam/models/Response.dart';
 import 'package:flutter/material.dart';
-import 'package:exam/utils/Constants.dart';
 import 'package:exam/utils/toast.dart';
-import 'package:exam/utils/secureStorage.dart';
 import 'package:exam/services/httpServices.dart';
-import 'package:jwt_decoder/jwt_decoder.dart'; //! Dependencia para decodificar un token
 
 //* Importación necesaria
 // import 'dart:developer';
@@ -21,10 +18,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   Future<Response>? futureSitios;
-  // ! Caparazon para el response
-  Response res = Response(msg: '', code: 100);
   
-  late Future<dynamic> futureResponse;
   Future<dynamic>? futureLogin;
 
   //? Formkey para el formulario. privada _
@@ -51,25 +45,8 @@ class _LoginPageState extends State<LoginPage> {
       futureLogin?.then((data) {
         print('Datos del futureLogin: $data');
         if (data.code == 200) {
-          // * Decodificación del token
-          // Map<String, dynamic>? decodedToken =
-          //     JwtDecoder.decode(data['token']!);
-
-          // // String? rol = decodedToken['rol'];
-          // String? username = data['username'];
-          // String? external_time = data['external_time'];
-          // String? correo = data['correo'];
-          // // print('Correo electrónico: $rol');
-
-          // SecureStorage.save('username', username);
-          // SecureStorage.save('correo', correo);
-          // SecureStorage.save('external_time', external_time);
-          // SecureStorage.save('token', data.datos['token']);
-          
           ToastUtil.successfullMessage('Sesion iniciada correctamente');
-
           Navigator.pushNamed(context, '/map');
-
         } else {
           ToastUtil.errorMessage(data.tag);
         }
