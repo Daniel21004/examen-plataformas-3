@@ -7,7 +7,7 @@ import 'dart:async';
 import 'package:exam/models/Response.dart';
 
 // const String URL = 'http://10.20.138.100:3000/';
-const String URL = 'http://192.168.1.5:3000/';
+const String URL = 'http://10.20.139.221:3041/';
 const String URL_MEDIA = URL + '/public';
 
 // 'http://10.0.2.2:3000/rol/obtener/5d180082-fff2-4cb7-9f13-349ce0492714')); //EMulador

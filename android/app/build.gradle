@@ -23,6 +23,9 @@ if (flutterVersionName == null) {
 }
 
 android {
+    // * Para el geo se debe tener un compile sdk a 33
+    compileSdkVersion 33
+
     namespace "com.example.exam"
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
@@ -45,8 +48,12 @@ android {
         applicationId "com.example.exam"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion flutter.minSdkVersion
-        targetSdkVersion flutter.targetSdkVersion
+        // * min sdk
+        // minSdkVersion flutter.minSdkVersion
+        minSdkVersion 21
+        // * target sdk
+        // targetSdkVersion flutter.targetSdkVersion
+        targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -62,6 +69,19 @@ android {
 
 flutter {
     source '../..'
+}
+
+
+// ! Por alguna razón, esto ayuda a quitar el error de dependencia duplicadas al intentar usar el geolocator
+configurations.all {
+   resolutionStrategy {
+      eachDependency {
+        if ((requested.group == "org.jetbrains.kotlin") 
+          &&(requested.name.startsWith("kotlin-stdlib"))) {
+            useVersion("1.8.0")
+        }
+    }
+}
 }
 
 dependencies {}

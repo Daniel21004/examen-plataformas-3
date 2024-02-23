@@ -1,7 +1,9 @@
 class Response {
   final String msg;
   final String tag;
+  // final String token;
   final dynamic datos; //dynamic ya es null
+  final dynamic sitios; //dynamic ya es null
   final int code;
   final int currentPage;
   final int totalPages;
@@ -9,6 +11,8 @@ class Response {
   const Response({
     required this.msg,
     this.datos,
+    // this.token = '',
+    this.sitios,
     this.tag = '',
     this.currentPage = 1,
     this.totalPages = 1,
@@ -20,6 +24,8 @@ class Response {
       return Response(
         msg: json['msg'] as String,
         datos: json['datos'],
+        // token: json['token'],
+        sitios: json['sitios'],
         tag: json['tag'] as String? ?? '',
         code: json['code'],
       currentPage: json['currentPage'] != null ? json['currentPage'] as int : 1,

@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<!-- # lOCACION -->
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <application
         android:label="exam"
         android:name="${applicationName}"

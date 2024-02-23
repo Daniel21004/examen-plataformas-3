@@ -1,4 +1,12 @@
+import 'package:exam/loginPage.dart';
+import 'package:exam/models/Response.dart';
+import 'package:exam/services/httpServices.dart';
+import 'package:exam/utils/secureStorage.dart';
+import 'package:exam/utils/toast.dart';
+import 'package:exam/views/registerPage.dart';
 import 'package:flutter/material.dart';
+import 'package:exam/views/mapPage.dart';
+import 'package:exam/views/page404.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,7 +39,26 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      // home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const LoginPage(),
+      initialRoute: '/login',
+      routes: {
+        '/login': (context) => LoginPage(),
+        '/register': (context) => RegisterPage(),
+        '/home': (context) => MyHomePage(title: 'Flutter Demo Home Page'),
+        // '/map': (context) {
+        //   final Map<String, dynamic>? args = ModalRoute.of(context)
+        //       ?.settings
+        //       .arguments as Map<String, dynamic>?;
+        //   return MapPage(
+        //     sitios: args?['sitios'] ?? [],
+        //   );
+        // },
+         '/map': (context) => MapPage(),
+      },
+      onGenerateRoute: (settings) {
+        return MaterialPageRoute(builder: (context) => Page404());
+      },
     );
   }
 }
@@ -55,7 +82,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  Future<Response>? futureSitios;
+
+  // ! Caparazon para el response
+  Response res = Response(msg: '', code: 100);
+
+  String rol = '';
   int _counter = 0;
+  dynamic sitios = [];
 
   void _incrementCounter() {
     setState(() {
@@ -65,6 +99,45 @@ class _MyHomePageState extends State<MyHomePage> {
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
       _counter++;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    iniciarCargaDatos();
+  }
+
+  void iniciarCargaDatos() async {
+    var sitiosFuture = obtener('api/listado/nro_guia', false);
+    // var externalUser = await SecureStorage.read('external_user');
+    // externalUser = (await SecureStorage.read(
+    //     'external_user'))!; //! Asegura que NUNCA se obtendra un null
+
+    // rol = (await SecureStorage.read(
+    // 'rol'))!; //! Asegura que NUNCA se obtendra un null
+    // print('ext $externalUser');
+    // print('rol $rol');
+
+    setState(() {
+      futureSitios = sitiosFuture;
+    });
+
+    futureSitios?.then((datos) {
+      print('Datos del futureSitios: $datos');
+      print('sitios: ${datos.sitios}');
+      if (datos.code == 200) {
+        sitios = datos.sitios;
+
+        ToastUtil.successfullMessage('sitios cargadas correctamente');
+      } else {
+        ToastUtil.errorMessage(datos.tag);
+      }
+    }).catchError((error) {
+      print('Error al recibir los datos del futureSitios: $error');
+      ToastUtil.errorMessage(
+          'Ocurrió un error al intentar recuperar los sitos');
     });
   }
 
@@ -84,7 +157,40 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: GestureDetector(
+          onTap: () {
+            // Aquí puedes mostrar el menú cuando se hace clic en el texto
+            showMenu(
+                context: context,
+                position: RelativeRect.fromLTRB(
+                    0, AppBar().preferredSize.height, 0, 0),
+                items: [
+                  // if (rol == Constants.USUARIO_ROL)
+                  const PopupMenuItem(value: 'map', child: Text('Ir al mapa')),
+                  const PopupMenuItem(
+                      value: 'cerrar_sesion', child: Text('Cerrar sesion')),
+                ]).then((value) {
+              if (value == 'actualizar') {
+                // todo xd
+              } else if (value == 'cerrar_sesion') {
+                SecureStorage.delete('token');
+                SecureStorage.delete('external_user');
+                Navigator.pushNamed(context, '/login');
+              } else if (value == 'map') {
+                Navigator.pushNamed(
+                  context,
+                  '/map',
+                  arguments: {
+                    'sitios': sitios,
+                  },
+                );
+                print('holaaa');
+              }
+            });
+          },
+          child: Text('Bienvenido',
+              style: const TextStyle(fontWeight: FontWeight.bold)),
+        ),
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
